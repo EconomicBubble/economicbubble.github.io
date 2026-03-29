@@ -4,7 +4,7 @@
     "href": "posts.html",
     "title": "Blog",
     "section": "",
-    "text": "My First Post\n\n\n\n\n\n\n\n\nJan 10, 2026\n\n\n\n\n\nNo matching items"
+    "text": "Mapping the Charge: UK EV Infrastructure 2026\n\n\n\n\n\n\n\n\nJan 10, 2026\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "index.html",
@@ -19,5 +19,26 @@
     "title": "About",
     "section": "",
     "text": "About this site"
+  },
+  {
+    "objectID": "posts/my-first-post.html",
+    "href": "posts/my-first-post.html",
+    "title": "Mapping the Charge: UK EV Infrastructure 2026",
+    "section": "",
+    "text": "As the UK transitions toward electric vehicles, understanding the density of charging infrastructure is critical. In this post, I explore the latest Department for Transport (DfT) data to see how many public chargers are available per 100,000 people across various Local Authorities."
+  },
+  {
+    "objectID": "posts/my-first-post.html#introduction",
+    "href": "posts/my-first-post.html#introduction",
+    "title": "Mapping the Charge: UK EV Infrastructure 2026",
+    "section": "",
+    "text": "As the UK transitions toward electric vehicles, understanding the density of charging infrastructure is critical. In this post, I explore the latest Department for Transport (DfT) data to see how many public chargers are available per 100,000 people across various Local Authorities."
+  },
+  {
+    "objectID": "posts/my-first-post.html#data-acquisition",
+    "href": "posts/my-first-post.html#data-acquisition",
+    "title": "Mapping the Charge: UK EV Infrastructure 2026",
+    "section": "Data Acquisition",
+    "text": "Data Acquisition\nTo ensure this analysis is reproducible, I am pulling the data directly from the ArcGIS REST API provided by the DfT GeoPortal. We use the sf library to read the GeoJSON stream. By setting returnGeometry=false, we fetch the data table quickly without the heavy geographic boundary files.\n\nlibrary(sf)\nlibrary(ggplot2)\nlibrary(dplyr)\n\n# API Endpoint for the Jan 2026 EV Charger Dataset\ntable_url &lt;- \"https://services5.arcgis.com/qUwnXV5uf1zyW6Y2/arcgis/rest/services/EVChargersEVCI0102_UK_DfT_Poly_2026_Jan/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson&returnGeometry=false\"\n\n# Read the data directly into a dataframe\nev_table &lt;- st_read(table_url)\n\nReading layer `OGRGeoJSON' from data source \n  `https://services5.arcgis.com/qUwnXV5uf1zyW6Y2/arcgis/rest/services/EVChargersEVCI0102_UK_DfT_Poly_2026_Jan/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson&returnGeometry=false' \n  using driver `GeoJSON'\nreplacing null geometries with empty geometries\nSimple feature collection with 361 features and 10 fields (with 361 geometries empty)\nGeometry type: GEOMETRYCOLLECTION\nDimension:     XY\nBounding box:  xmin: NA ymin: NA xmax: NA ymax: NA\nGeodetic CRS:  WGS 84\n\n# Filter out the extreme outliers (&gt; 1000)\nev_filtered &lt;- ev_table %&gt;% \n  filter(Public_EV_chargers_per_100k_pop &lt;= 1000)\n\n# Create the histogram\nggplot(ev_filtered, aes(x = Public_EV_chargers_per_100k_pop)) +\n  geom_histogram(bins = 35, fill = \"#2c7fb8\", color = \"white\") +\n  labs(\n    title = \"Distribution of Public EV Chargers in the UK\",\n    subtitle = \"Excludes Westminster and Hammersmith & Fulham (Outliers &gt; 1000)\",\n    x = \"EV Chargers per 100k People\",\n    y = \"Number of Local Authorities\"\n  ) +\n  theme_minimal()"
   }
 ]
