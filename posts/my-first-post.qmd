@@ -1,6 +1,45 @@
 ---
-title: "My First Post"
+title: "Mapping the Charge: UK EV Infrastructure 2026"
 date: 2026-01-10
-categories: [blog]
+categories: [Data Analysis, R, EV]
 ---
+
+## Introduction
+
+As the UK transitions toward electric vehicles, understanding the density of charging infrastructure is critical. In this post, I explore the latest Department for Transport (DfT) data to see how many public chargers are available per 100,000 people across various Local Authorities.
+
+## Data Acquisition
+
+To ensure this analysis is reproducible, I am pulling the data directly from the ArcGIS REST API provided by the DfT GeoPortal. We use the `sf` library to read the GeoJSON stream. By setting `returnGeometry=false`, we fetch the data table quickly without the heavy geographic boundary files.
+
+```{r}
+#| message: false
+#| warning: false
+
+library(sf)
+library(ggplot2)
+library(dplyr)
+
+# API Endpoint for the Jan 2026 EV Charger Dataset
+table_url <- "https://services5.arcgis.com/qUwnXV5uf1zyW6Y2/arcgis/rest/services/EVChargersEVCI0102_UK_DfT_Poly_2026_Jan/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson&returnGeometry=false"
+
+# Read the data directly into a dataframe
+ev_table <- st_read(table_url)
+
+# Filter out the extreme outliers (> 1000)
+ev_filtered <- ev_table %>% 
+  filter(Public_EV_chargers_per_100k_pop <= 1000)
+
+# Create the histogram
+ggplot(ev_filtered, aes(x = Public_EV_chargers_per_100k_pop)) +
+  geom_histogram(bins = 35, fill = "#2c7fb8", color = "white") +
+  labs(
+    title = "Distribution of Public EV Chargers in the UK",
+    subtitle = "Excludes Westminster and Hammersmith & Fulham (Outliers > 1000)",
+    x = "EV Chargers per 100k People",
+    y = "Number of Local Authorities"
+  ) +
+  theme_minimal()
+
+```
 
