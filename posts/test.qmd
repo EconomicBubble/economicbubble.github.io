@@ -1,0 +1,13 @@
+---
+title: "Test Page"
+date: 2026-01-10
+categories: [Data Analysis, R, EV]
+---
+
+## Introduction
+
+As the UK transitions toward electric vehicles, understanding the density of charging infrastructure is critical. In this post, I explore the latest Department for Transport (DfT) data to see how many public chargers are available per 100,000 people across various Local Authorities.
+
+## Data Acquisition
+
+To ensure this analysis is reproducible, I am pulling the data directly from the ArcGIS REST API provided by the DfT GeoPortal. We use the `sf` library to read the GeoJSON stream. By setting `returnGeometry=false`, we fetch the data table quickly without the heavy geographic boundary files.
